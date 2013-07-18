@@ -3,7 +3,7 @@
   (:use :cl))
 (in-package :cl-infix-parser)
 
-(export '(p/number p/eq))
+(export '(p/number p/eq p/seq))
 
 (defun p/number (tokens)
   (if (numberp (car tokens))
@@ -15,3 +15,16 @@
       (if (eq (car tokens) value)
 	(values t (car tokens) (cdr tokens))
 	(values))))
+
+(defun p/seq (&rest parsers)
+  #'(lambda (tokens)
+      (let ((result ())
+	    (tokens-left tokens))
+	(loop for p in parsers
+	      do (multiple-value-bind (p-ok p-result p-left)
+		      (funcall p tokens-left)
+		   (if (not p-ok)
+		     (return (values)))
+		   (setf tokens-left p-left)
+		   (setf result (append result (list p-result))))
+	      finally (return (values t result tokens-left))))))

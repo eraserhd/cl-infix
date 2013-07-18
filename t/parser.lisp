@@ -5,14 +5,26 @@
 	:cl-test-more))
 (in-package :cl-infix-parser-test)
 
-(plan 2)
+(defmacro parse (parser tokens &rest rest)
+  (ecase (first rest)
+    (:fails
+     `(multiple-value-bind (parse-ok) (,parser ',tokens)
+        (ok (not parse-ok))))
+    (:returns
+     `(multiple-value-bind (parse-ok result) (,parser ',tokens)
+	(if parse-ok
+	  (is result ,(second rest))
+	  (ok nil))))
+    (:leaves
+     `(let ((parse-result (multiple-value-list (,parser ',tokens))))
+	(if (first parse-result)
+	  (is (third parse-result) ',(second rest))
+	  (ok nil))))))
 
-(is (multiple-value-list (p/number '()))
-    (list)
-    "P/NUMBER fails on an empty list")
+(plan 3)
 
-(is (multiple-value-list (p/number '(42 x)))
-    (list t 42 '(x))
-    "P/NUMBER parses '(42)")
+(parse p/number () :fails)
+(parse p/number (42 x) :returns 42)
+(parse p/number (42 x) :leaves (x))
 
 (finalize)

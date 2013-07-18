@@ -15,5 +15,6 @@
                :cl-test-more)
   :components ((:module "t"
                 :components
-                ((:file "cl-infix"))))
+                ((:file "parser")
+		 (:file "cl-infix"))))
   :perform (load-op :after (op c) (asdf:clear-system c)))

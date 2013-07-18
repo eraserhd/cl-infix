@@ -1,12 +1,3 @@
-#|
-  This file is a part of cl-infix project.
-  Copyright (c) 2013 Jason Felice (jason.m.felice@gmail.com)
-|#
-
-#|
-  Author: Jason Felice (jason.m.felice@gmail.com)
-|#
-
 (in-package :cl-user)
 (defpackage cl-infix-asd
   (:use :cl :asdf))
@@ -19,7 +10,8 @@
   :depends-on ()
   :components ((:module "src"
                 :components
-                ((:file "cl-infix"))))
+                ((:file "parser")
+		 (:file "cl-infix" :depends-on ("parser")))))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames

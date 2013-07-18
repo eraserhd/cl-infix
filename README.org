@@ -1,0 +1,17 @@
+* Cl-Infix 
+
+** Usage
+
+** Dependencies
+
+** Installation
+
+
+** Author
+
++ Jason Felice (jason.m.felice@gmail.com)
+
+* Copyright
+
+Copyright (c) 2013 Jason Felice (jason.m.felice@gmail.com)
+

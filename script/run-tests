@@ -1,4 +1,4 @@
 #!/bin/sh
 
 clear
-exec sbcl --noinform --noprint --eval "(ql:quickload :cl-infix-test)" --eval "(sb-ext:exit)"
+exec sbcl --noinform --noprint --disable-debugger --eval "(ql:quickload :cl-infix-test)" --eval "(sb-ext:exit)"

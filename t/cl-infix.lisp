@@ -12,10 +12,12 @@
       (expands-to
 	`(is (macroexpand-1 ',form) ',object ,message :test #'equalp)))))
 
-(plan 3)
+(plan 4)
 
 (the-form (infix 42) expands-to 42)
 (the-form (infix + 2) expands-to 2)
 (the-form (infix - 4) expands-to (- 4))
+
+(the-form (infix x) expands-to x)
 
 (finalize)

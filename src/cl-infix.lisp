@@ -6,8 +6,20 @@
 
 (export 'infix)
 
+(defvar *reserved-symbols* '(+ -))
+
+(defvar *l-value*
+  #'(lambda (tokens)
+      (let ((sym (car tokens)))
+	(if (and (symbolp sym)
+		 (not (member sym *reserved-symbols*)))
+	  (values t sym (cdr tokens))
+	  (values)))))
+
 (defvar *r-value*
-  #'p/number)
+  (p/or
+    #'p/number
+    *l-value*))
 
 (defvar *unary-plus*
   (p/seq '+ *r-value* :=> #'(lambda ($1 $2) $2)))

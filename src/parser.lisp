@@ -5,6 +5,11 @@
 
 (export '(p/number p/eq p/seq))
 
+(defun as-parser (p)
+  (if (functionp p)
+    p
+    (p/eq p)))
+
 (defun p/number (tokens)
   (if (numberp (car tokens))
     (values t (car tokens) (cdr tokens))
@@ -22,7 +27,7 @@
 	    (tokens-left tokens))
 	(loop for p in parsers
 	      do (multiple-value-bind (p-ok p-result p-left)
-		      (funcall p tokens-left)
+		      (funcall (as-parser p) tokens-left)
 		   (if (not p-ok)
 		     (return (values)))
 		   (setf tokens-left p-left)

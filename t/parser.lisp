@@ -59,4 +59,6 @@
 (parsing (+ 7 7) with (p/seq (p/eq '+) #'p/number) returns (+ 7))
 (parsing (+ 7 7) with (p/seq (p/eq '+) #'p/number) leaves (7))
 
+(parsing (+ 7 7) with (p/seq '+ #'p/number) returns (+ 7))
+
 (finalize)

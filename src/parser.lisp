@@ -6,9 +6,11 @@
 (export '(p/number p/eq p/seq))
 
 (defun as-parser (p)
-  (if (functionp p)
-    p
-    (p/eq p)))
+  (cond
+    ((functionp p)
+     p)
+    (t
+     (p/eq p))))
 
 (defun p/number (tokens)
   (if (numberp (car tokens))
@@ -22,15 +24,23 @@
 	(values))))
 
 (defun p/seq (&rest parsers)
-  (let ((real-parsers (mapcar #'as-parser parsers)))
+  (let* ((real-parsers (loop for p in parsers
+			     while (not (eq :=> p))
+			     collect (as-parser p)))
+	 (=>-value (second (member :=> parsers)))
+	 (transform (if =>-value
+		      =>-value
+		      #'(lambda (&rest rest)
+			  rest))))
     #'(lambda (tokens)
 	(let ((result ())
 	      (tokens-left tokens))
 	  (loop for p in real-parsers
+		while (not (eq :=> p))
 		do (multiple-value-bind (p-ok p-result p-left)
 			(funcall p tokens-left)
 		     (if (not p-ok)
 		       (return (values)))
 		     (setf tokens-left p-left)
 		     (setf result (append result (list p-result))))
-		finally (return (values t result tokens-left)))))))
+		finally (return (values t (apply transform result) tokens-left)))))))

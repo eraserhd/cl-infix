@@ -6,6 +6,21 @@
 (in-package :cl-infix-parser-test)
 
 (defmacro parsing (tokens with parser &rest rest)
+  "DSL for testing parser combinators.
+
+  Three forms are used:
+
+    (parsing i with p fails)
+    (parsing i with p returns r)
+    (parsing i with p leaves l)
+
+  where
+
+    i is the input token list.
+    p is the parser being tested.
+    r is the expected parser result (implying success).
+    l is a list of tokens which should remain after success.
+  "
   (let* ((condition-msg (if (= 1 (length rest))
 			  (format nil "~(~S~)" (first rest))
 			  (format nil "~(~S~) ~:A" (first rest) (second rest))))

@@ -6,13 +6,16 @@
 (in-package :cl-infix-test)
 
 (defmacro the-form (form verb object)
-  (let ((message (format nil "~A ~(~A~) ~A." form verb object)))
+  (let ((message (let ((*print-pretty* nil))
+		   (format nil "~A ~(~A~) ~A." form verb object))))
     (ecase verb
       (expands-to
-	`(is ,(macroexpand-1 form) ,object ,message)))))
+	`(is (macroexpand-1 ',form) ',object ,message :test #'equalp)))))
 
-(plan 1)
+(plan 3)
 
 (the-form (infix 42) expands-to 42)
+(the-form (infix + 2) expands-to 2)
+(the-form (infix - 4) expands-to (- 4))
 
 (finalize)

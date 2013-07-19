@@ -6,8 +6,15 @@
 
 (export 'infix)
 
-(setf (symbol-function 'i/constant) #'p/number)
+(defvar *r-value*
+  #'p/number)
+
+(defvar *precedence-level-3*
+  (p/or
+    (p/seq '+ *r-value* :=> #'(lambda ($1 $2) $2))
+    (p/seq '- *r-value*)
+    *r-value*))
 
 (defmacro infix (&body tokens)
-  (multiple-value-bind (ok result left) (i/constant tokens)
+  (multiple-value-bind (ok result left) (funcall *precedence-level-3* tokens)
     result))

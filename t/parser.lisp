@@ -5,35 +5,43 @@
 	:cl-test-more))
 (in-package :cl-infix-parser-test)
 
-(defmacro parse (parser tokens &rest rest)
-  (ecase (first rest)
-    (:fails
-     `(multiple-value-bind (parse-ok) (funcall ,parser ',tokens)
-        (ok (not parse-ok))))
-    (:returns
-     `(multiple-value-bind (parse-ok result) (funcall ,parser ',tokens)
-	(if parse-ok
-	  (is result ',(second rest) "" :test #'equal)
-	  (ok nil))))
-    (:leaves
-     `(let ((parse-result (multiple-value-list (funcall ,parser ',tokens))))
-	(if (first parse-result)
-	  (is (third parse-result) ',(second rest) "" :test #'equal)
-	  (ok nil))))))
+(defmacro parsing (tokens with parser &rest rest)
+  (let* ((condition-msg (if (= 1 (length rest))
+			  (format nil "~(~S~)" (first rest))
+			  (format nil "~(~S~) ~:A" (first rest) (second rest))))
+	 (message (format nil
+			  "parsing ~:A with ~W ~A."
+			  tokens
+			  parser
+			  condition-msg)))
+    (ecase (first rest)
+      (fails
+       `(multiple-value-bind (parse-ok) (funcall ,parser ',tokens)
+	  (ok (not parse-ok) ,message)))
+      (returns
+       `(multiple-value-bind (parse-ok result) (funcall ,parser ',tokens)
+	  (if parse-ok
+	    (is result ',(second rest) ,message :test #'equal)
+	    (ok nil ,message))))
+      (leaves
+       `(let ((parse-result (multiple-value-list (funcall ,parser ',tokens))))
+	  (if (first parse-result)
+	    (is (third parse-result) ',(second rest) ,message :test #'equal)
+	    (ok nil ,message)))))))
 
 (plan 10)
 
-(parse #'p/number () :fails)
-(parse #'p/number (42 x) :returns 42)
-(parse #'p/number (42 x) :leaves (x))
+(parsing () with #'p/number fails)
+(parsing (42 x) with #'p/number returns 42)
+(parsing (42 x) with #'p/number leaves (x))
 
-(parse (p/eq 'y) () :fails)
-(parse (p/eq '=) (=) :returns =)
-(parse (p/eq '=) (= 7) :leaves (7))
+(parsing () with (p/eq 'y) fails)
+(parsing (=) with (p/eq '=) returns =)
+(parsing (= 7) with (p/eq '=) leaves (7))
 
-(parse (p/seq (p/eq '+) #'p/number) (+) :fails)
-(parse (p/seq (p/eq '+) #'p/number) (+ 7) :returns (+ 7))
-(parse (p/seq (p/eq '+) #'p/number) (+ 7 7) :returns (+ 7))
-(parse (p/seq (p/eq '+) #'p/number) (+ 7 7) :leaves (7))
+(parsing (+) with (p/seq (p/eq '+) #'p/number) fails)
+(parsing (+ 7) with (p/seq (p/eq '+) #'p/number) returns (+ 7))
+(parsing (+ 7 7) with (p/seq (p/eq '+) #'p/number) returns (+ 7))
+(parsing (+ 7 7) with (p/seq (p/eq '+) #'p/number) leaves (7))
 
 (finalize)

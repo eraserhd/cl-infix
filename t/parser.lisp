@@ -44,7 +44,7 @@
 	    (is (third parse-result) ',(second rest) ,message :test #'equal)
 	    (ok nil ,message)))))))
 
-(plan 12)
+(plan 17)
 
 (parsing () with #'p/number fails)
 (parsing (42 x) with #'p/number returns 42)
@@ -65,5 +65,12 @@
 	 with (p/seq #'p/number '% #'p/number :=> #'(lambda ($1 $2 $3)
 						      `(mod ,$1 ,$3)))
 	 returns (mod 7 2))
+
+(parsing (7 8) with (p/or #'p/number (p/eq 'x)) returns 7)
+(parsing (7 8) with (p/or #'p/number (p/eq 'x)) leaves (8))
+(parsing (x 8) with (p/or #'p/number (p/eq 'x)) returns x)
+(parsing (x 8) with (p/or #'p/number (p/eq 'x)) leaves (8))
+
+(parsing (y) with (p/or #'p/number (p/eq 'x)) fails)
 
 (finalize)

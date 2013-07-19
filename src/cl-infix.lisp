@@ -9,10 +9,16 @@
 (defvar *r-value*
   #'p/number)
 
+(defvar *unary-plus*
+  (p/seq '+ *r-value* :=> #'(lambda ($1 $2) $2)))
+
+(defvar *unary-minus*
+  (p/seq '- *r-value*))
+
 (defvar *precedence-level-3*
   (p/or
-    (p/seq '+ *r-value* :=> #'(lambda ($1 $2) $2))
-    (p/seq '- *r-value*)
+    *unary-plus*
+    *unary-minus*
     *r-value*))
 
 (defmacro infix (&body tokens)

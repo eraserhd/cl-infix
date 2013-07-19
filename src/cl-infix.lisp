@@ -4,4 +4,10 @@
 	:cl-infix-parser))
 (in-package :cl-infix)
 
-;; blah blah blah.
+(export 'infix)
+
+(setf (symbol-function 'i/constant) #'p/number)
+
+(defmacro infix (&body tokens)
+  (multiple-value-bind (ok result left) (i/constant tokens)
+    result))

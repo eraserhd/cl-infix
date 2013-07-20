@@ -4,9 +4,9 @@
 	:cl-infix-parser))
 (in-package :cl-infix)
 
-(export 'infix)
+(export '(infix))
 
-(defvar *reserved-symbols* '(+ -))
+(defvar *reserved-symbols* '(+ - ++ --))
 
 (defvar *l-value*
   #'(lambda (tokens)
@@ -21,17 +21,37 @@
     #'p/number
     *l-value*))
 
+;; LEVEL 2 OPERATORS
+
+(defvar *pre-increment*
+  (p/seq '++ *l-value* :=> #'(lambda ($1 $2)
+			       `(incf ,$2))))
+
+(defvar *pre-decrement*
+  (p/seq '-- *l-value* :=> #'(lambda ($1 $2)
+			       `(decf ,$2))))
+
+(defvar *precedence-level-2*
+  (p/or
+    *pre-increment*
+    *pre-decrement*
+    *r-value*))
+
+;; LEVEL 3 OPERATORS
+
 (defvar *unary-plus*
-  (p/seq '+ *r-value* :=> #'(lambda ($1 $2) $2)))
+  (p/seq '+ *precedence-level-2* :=> #'(lambda ($1 $2) $2)))
 
 (defvar *unary-minus*
-  (p/seq '- *r-value*))
+  (p/seq '- *precedence-level-2*))
 
 (defvar *precedence-level-3*
   (p/or
     *unary-plus*
     *unary-minus*
-    *r-value*))
+    *precedence-level-2*))
+
+;; INFIX
 
 (defmacro infix (&body tokens)
   (multiple-value-bind (ok result left) (funcall *precedence-level-3* tokens)

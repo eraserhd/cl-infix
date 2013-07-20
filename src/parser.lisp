@@ -7,6 +7,8 @@
 
 (defun as-parser (p)
   (cond
+    ((symbolp p)
+     (p/symbol-named (symbol-name p)))
     ((functionp p)
      p)
     (t
@@ -23,6 +25,13 @@
 	(values t (car tokens) (cdr tokens))
 	(values))))
 
+(defun p/symbol-named (name)
+  #'(lambda (tokens)
+      (if (and (symbolp (first tokens))
+	       (equal (symbol-name (first tokens)) name))
+	(values t (car tokens) (cdr tokens))
+	(values))))
+
 (defun p/seq (&rest parsers)
   (let* ((real-parsers (loop for p in parsers
 			     while (not (eq :=> p))
@@ -36,7 +45,6 @@
 	(let ((result ())
 	      (tokens-left tokens))
 	  (loop for p in real-parsers
-		while (not (eq :=> p))
 		do (multiple-value-bind (p-ok p-result p-left)
 			(funcall p tokens-left)
 		     (if (not p-ok)

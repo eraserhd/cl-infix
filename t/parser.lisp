@@ -5,7 +5,7 @@
 	:cl-test-more))
 (in-package :cl-infix-parser-test)
 
-(defmacro parsing (tokens with parser outcome &optional (expectation nil has-expectation))
+(defmacro parsing (tokens with parser expectation &optional (value nil has-value))
   "DSL for testing parser combinators.
 
   Three forms are used:
@@ -21,27 +21,27 @@
     r is the expected parser result (implying success).
     l is a list of tokens which should remain after success.
   "
-  (let* ((condition-msg (if (not has-expectation)
-			  (format nil "~(~S~)" outcome)
-			  (format nil "~(~S~) ~:A" outcome expectation)))
+  (let* ((condition-msg (if (not has-value)
+			  (format nil "~(~S~)" expectation)
+			  (format nil "~(~S~) ~:A" expectation value)))
 	 (message (format nil
 			  "parsing ~:A with ~W ~A."
 			  tokens
 			  parser
 			  condition-msg)))
-    (ecase outcome
+    (ecase expectation
       (fails
        `(multiple-value-bind (parse-ok) (funcall ,parser ',tokens)
 	  (ok (not parse-ok) ,message)))
       (returns
        `(multiple-value-bind (parse-ok result) (funcall ,parser ',tokens)
 	  (if parse-ok
-	    (is result ',expectation ,message :test #'equal)
+	    (is result ',value ,message :test #'equal)
 	    (ok nil ,message))))
       (leaves
        `(let ((parse-result (multiple-value-list (funcall ,parser ',tokens))))
 	  (if (first parse-result)
-	    (is (third parse-result) ',expectation ,message :test #'equal)
+	    (is (third parse-result) ',value ,message :test #'equal)
 	    (ok nil ,message)))))))
 
 (plan 17)

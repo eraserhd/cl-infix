@@ -44,13 +44,14 @@
 	    (is (third parse-result) ',value ,message :test #'equal)
 	    (ok nil ,message)))))))
 
-(plan 17)
+(plan 18)
 
 (parsing () with #'p/number fails)
 (parsing (42 x) with #'p/number returns 42)
 (parsing (42 x) with #'p/number leaves (x))
 
 (parsing () with (p/eq 'y) fails)
+(parsing (x) with (p/eq 'y) fails)
 (parsing (=) with (p/eq '=) returns =)
 (parsing (= 7) with (p/eq '=) leaves (7))
 

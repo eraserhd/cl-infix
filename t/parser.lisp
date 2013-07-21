@@ -52,15 +52,15 @@
 (taking-something-from (23 2 3 1) with #'number-parser returns 23)
 (taking-something-from (23 2 3 1) with #'number-parser leaves (2 3 1))
 
-(taking-something-from () with (p/eq 'y) fails)
-(taking-something-from (x) with (p/eq 'y) fails)
-(taking-something-from (=) with (p/eq '=) returns =)
-(taking-something-from (= 7) with (p/eq '=) leaves (7))
+(taking-something-from () with (eq-parser 'y) fails)
+(taking-something-from (x) with (eq-parser 'y) fails)
+(taking-something-from (=) with (eq-parser '=) returns =)
+(taking-something-from (= 7) with (eq-parser '=) leaves (7))
 
-(taking-something-from (+) with (p/seq (p/eq '+) #'number-parser) fails)
-(taking-something-from (+ 7) with (p/seq (p/eq '+) #'number-parser) returns (+ 7))
-(taking-something-from (+ 7 7) with (p/seq (p/eq '+) #'number-parser) returns (+ 7))
-(taking-something-from (+ 7 7) with (p/seq (p/eq '+) #'number-parser) leaves (7))
+(taking-something-from (+) with (p/seq (eq-parser '+) #'number-parser) fails)
+(taking-something-from (+ 7) with (p/seq (eq-parser '+) #'number-parser) returns (+ 7))
+(taking-something-from (+ 7 7) with (p/seq (eq-parser '+) #'number-parser) returns (+ 7))
+(taking-something-from (+ 7 7) with (p/seq (eq-parser '+) #'number-parser) leaves (7))
 
 (taking-something-from (+ 7 7) with (p/seq '+ #'number-parser) returns (+ 7))
 
@@ -69,11 +69,11 @@
 						      `(mod ,$1 ,$3)))
 	 returns (mod 7 2))
 
-(taking-something-from (7 8) with (p/or #'number-parser (p/eq 'x)) returns 7)
-(taking-something-from (7 8) with (p/or #'number-parser (p/eq 'x)) leaves (8))
-(taking-something-from (x 8) with (p/or #'number-parser (p/eq 'x)) returns x)
-(taking-something-from (x 8) with (p/or #'number-parser (p/eq 'x)) leaves (8))
+(taking-something-from (7 8) with (p/or #'number-parser (eq-parser 'x)) returns 7)
+(taking-something-from (7 8) with (p/or #'number-parser (eq-parser 'x)) leaves (8))
+(taking-something-from (x 8) with (p/or #'number-parser (eq-parser 'x)) returns x)
+(taking-something-from (x 8) with (p/or #'number-parser (eq-parser 'x)) leaves (8))
 
-(taking-something-from (y) with (p/or #'number-parser (p/eq 'x)) fails)
+(taking-something-from (y) with (p/or #'number-parser (eq-parser 'x)) fails)
 
 (finalize)

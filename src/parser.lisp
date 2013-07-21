@@ -3,7 +3,7 @@
   (:use :cl))
 (in-package :cl-infix-parser)
 
-(export '(p/number p/eq p/seq p/or))
+(export '(number-parser p/eq p/seq p/or))
 
 (defun as-parser (p)
   (cond
@@ -14,7 +14,7 @@
     (t
      (p/eq p))))
 
-(defun p/number (tokens)
+(defun number-parser (tokens)
   (if (numberp (car tokens))
     (values t (car tokens) (cdr tokens))
     (values)))

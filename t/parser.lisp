@@ -5,14 +5,14 @@
 	:cl-test-more))
 (in-package :cl-infix-parser-test)
 
-(defmacro parsing (tokens with parser expectation &optional (value nil has-value))
+(defmacro taking-something-from (tokens with parser expectation &optional (value nil has-value))
   "DSL for testing parser combinators.
 
   Three forms are used:
 
-    (parsing i with p fails)
-    (parsing i with p returns r)
-    (parsing i with p leaves l)
+    (taking-something-from i with p fails)
+    (taking-something-from i with p returns r)
+    (taking-something-from i with p leaves l)
 
   where
 
@@ -25,7 +25,7 @@
 			  (format nil "~(~S~)" expectation)
 			  (format nil "~(~S~) ~:A" expectation value)))
 	 (message (format nil
-			  "parsing ~:A with ~W ~A."
+			  "taking-something-from ~:A with ~W ~A."
 			  tokens
 			  parser
 			  condition-msg)))
@@ -46,32 +46,34 @@
 
 (plan 18)
 
-(parsing () with #'p/number fails)
-(parsing (42 x) with #'p/number returns 42)
-(parsing (42 x) with #'p/number leaves (x))
+(taking-something-from () with #'number-parser fails)
+(taking-something-from (42 x) with #'number-parser returns 42)
+(taking-something-from (42 x) with #'number-parser leaves (x))
+(taking-something-from (23 2 3 1) with #'number-parser returns 23)
+(taking-something-from (23 2 3 1) with #'number-parser leaves (2 3 1))
 
-(parsing () with (p/eq 'y) fails)
-(parsing (x) with (p/eq 'y) fails)
-(parsing (=) with (p/eq '=) returns =)
-(parsing (= 7) with (p/eq '=) leaves (7))
+(taking-something-from () with (p/eq 'y) fails)
+(taking-something-from (x) with (p/eq 'y) fails)
+(taking-something-from (=) with (p/eq '=) returns =)
+(taking-something-from (= 7) with (p/eq '=) leaves (7))
 
-(parsing (+) with (p/seq (p/eq '+) #'p/number) fails)
-(parsing (+ 7) with (p/seq (p/eq '+) #'p/number) returns (+ 7))
-(parsing (+ 7 7) with (p/seq (p/eq '+) #'p/number) returns (+ 7))
-(parsing (+ 7 7) with (p/seq (p/eq '+) #'p/number) leaves (7))
+(taking-something-from (+) with (p/seq (p/eq '+) #'number-parser) fails)
+(taking-something-from (+ 7) with (p/seq (p/eq '+) #'number-parser) returns (+ 7))
+(taking-something-from (+ 7 7) with (p/seq (p/eq '+) #'number-parser) returns (+ 7))
+(taking-something-from (+ 7 7) with (p/seq (p/eq '+) #'number-parser) leaves (7))
 
-(parsing (+ 7 7) with (p/seq '+ #'p/number) returns (+ 7))
+(taking-something-from (+ 7 7) with (p/seq '+ #'number-parser) returns (+ 7))
 
-(parsing (7 % 2)
-	 with (p/seq #'p/number '% #'p/number :=> #'(lambda ($1 $2 $3)
+(taking-something-from (7 % 2)
+	 with (p/seq #'number-parser '% #'number-parser :=> #'(lambda ($1 $2 $3)
 						      `(mod ,$1 ,$3)))
 	 returns (mod 7 2))
 
-(parsing (7 8) with (p/or #'p/number (p/eq 'x)) returns 7)
-(parsing (7 8) with (p/or #'p/number (p/eq 'x)) leaves (8))
-(parsing (x 8) with (p/or #'p/number (p/eq 'x)) returns x)
-(parsing (x 8) with (p/or #'p/number (p/eq 'x)) leaves (8))
+(taking-something-from (7 8) with (p/or #'number-parser (p/eq 'x)) returns 7)
+(taking-something-from (7 8) with (p/or #'number-parser (p/eq 'x)) leaves (8))
+(taking-something-from (x 8) with (p/or #'number-parser (p/eq 'x)) returns x)
+(taking-something-from (x 8) with (p/or #'number-parser (p/eq 'x)) leaves (8))
 
-(parsing (y) with (p/or #'p/number (p/eq 'x)) fails)
+(taking-something-from (y) with (p/or #'number-parser (p/eq 'x)) fails)
 
 (finalize)

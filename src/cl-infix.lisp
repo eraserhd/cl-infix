@@ -21,7 +21,7 @@
 
 (defvar *r-value*
   (p/or
-    #'p/number
+    #'number-parser
     *l-value*))
 
 ;; LEVEL 2 OPERATORS

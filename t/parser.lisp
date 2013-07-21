@@ -5,7 +5,7 @@
 	:cl-test-more))
 (in-package :cl-infix-parser-test)
 
-(defmacro parsing (tokens with parser outcome &optional expectation)
+(defmacro parsing (tokens with parser outcome &optional (expectation nil has-expectation))
   "DSL for testing parser combinators.
 
   Three forms are used:
@@ -21,7 +21,7 @@
     r is the expected parser result (implying success).
     l is a list of tokens which should remain after success.
   "
-  (let* ((condition-msg (if (not expectation)
+  (let* ((condition-msg (if (not has-expectation)
 			  (format nil "~(~S~)" outcome)
 			  (format nil "~(~S~) ~:A" outcome expectation)))
 	 (message (format nil

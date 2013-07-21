@@ -3,16 +3,12 @@
   (:use :cl))
 (in-package :cl-infix-parser)
 
-(export '(number-parser eq-parser p/seq p/or))
+(export '(number-parser eq-parser parsers-in-series p/or))
 
 (defun as-parser (p)
-  (cond
-    ((symbolp p)
-     (p/symbol-named (symbol-name p)))
-    ((functionp p)
-     p)
-    (t
-     (eq-parser p))))
+  (if (symbolp p)
+    (symbol-parser (symbol-name p))
+    p))
 
 (defun number-parser (tokens)
   (if (numberp (car tokens))
@@ -25,14 +21,14 @@
 	(values t (car tokens) (cdr tokens))
 	(values))))
 
-(defun p/symbol-named (name)
+(defun symbol-parser (name)
   #'(lambda (tokens)
       (if (and (symbolp (first tokens))
 	       (equal (symbol-name (first tokens)) name))
 	(values t (car tokens) (cdr tokens))
 	(values))))
 
-(defun p/seq (&rest parsers)
+(defun parsers-in-series (&rest parsers)
   (let* ((real-parsers (loop for p in parsers
 			     while (not (eq :=> p))
 			     collect (as-parser p)))

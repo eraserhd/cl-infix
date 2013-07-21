@@ -27,12 +27,12 @@
 ;; LEVEL 2 OPERATORS
 
 (defvar *pre-increment*
-  (p/seq '++ *l-value* :=> #'(lambda ($1 $2)
-			       `(incf ,$2))))
+  (parsers-in-series '++ *l-value* :=> #'(lambda ($1 $2)
+			                   `(incf ,$2))))
 
 (defvar *pre-decrement*
-  (p/seq '-- *l-value* :=> #'(lambda ($1 $2)
-			       `(decf ,$2))))
+  (parsers-in-series '-- *l-value* :=> #'(lambda ($1 $2)
+			                   `(decf ,$2))))
 
 (defvar *precedence-level-2*
   (p/or
@@ -43,10 +43,10 @@
 ;; LEVEL 3 OPERATORS
 
 (defvar *unary-plus*
-  (p/seq '+ *precedence-level-2* :=> #'(lambda ($1 $2) $2)))
+  (parsers-in-series '+ *precedence-level-2* :=> #'(lambda ($1 $2) $2)))
 
 (defvar *unary-minus*
-  (p/seq '- *precedence-level-2*))
+  (parsers-in-series '- *precedence-level-2*))
 
 (defvar *precedence-level-3*
   (p/or
@@ -58,8 +58,8 @@
 
 (defvar *precedence-level-5*
   (p/or
-    (p/seq *precedence-level-3* '* *precedence-level-3* :=> #'(lambda ($1 $2 $3)
-								`(* ,$1 ,$3)))
+    (parsers-in-series *precedence-level-3* '* *precedence-level-3* :=> #'(lambda ($1 $2 $3)
+								            `(* ,$1 ,$3)))
     *precedence-level-3*))
 
 ;; INFIX

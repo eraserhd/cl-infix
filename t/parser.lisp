@@ -57,15 +57,15 @@
 (taking-something-from (=) with (eq-parser '=) returns =)
 (taking-something-from (= 7) with (eq-parser '=) leaves (7))
 
-(taking-something-from (+) with (p/seq (eq-parser '+) #'number-parser) fails)
-(taking-something-from (+ 7) with (p/seq (eq-parser '+) #'number-parser) returns (+ 7))
-(taking-something-from (+ 7 7) with (p/seq (eq-parser '+) #'number-parser) returns (+ 7))
-(taking-something-from (+ 7 7) with (p/seq (eq-parser '+) #'number-parser) leaves (7))
+(taking-something-from (+) with (parsers-in-series (eq-parser '+) #'number-parser) fails)
+(taking-something-from (+ 7) with (parsers-in-series (eq-parser '+) #'number-parser) returns (+ 7))
+(taking-something-from (+ 7 7) with (parsers-in-series (eq-parser '+) #'number-parser) returns (+ 7))
+(taking-something-from (+ 7 7) with (parsers-in-series (eq-parser '+) #'number-parser) leaves (7))
 
-(taking-something-from (+ 7 7) with (p/seq '+ #'number-parser) returns (+ 7))
+(taking-something-from (+ 7 7) with (parsers-in-series '+ #'number-parser) returns (+ 7))
 
 (taking-something-from (7 % 2)
-	 with (p/seq #'number-parser '% #'number-parser :=> #'(lambda ($1 $2 $3)
+	 with (parsers-in-series #'number-parser '% #'number-parser :=> #'(lambda ($1 $2 $3)
 						      `(mod ,$1 ,$3)))
 	 returns (mod 7 2))
 

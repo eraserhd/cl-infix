@@ -4,6 +4,9 @@
 	:cl-infix-parser))
 (in-package :cl-infix)
 
+;; Operator precedence levels refer to the chart on
+;; http://en.cppreference.com/w/cpp/language/operator_precedence
+
 (export '(infix))
 
 (defvar *reserved-symbols* '(+ - ++ --))
@@ -51,8 +54,16 @@
     *unary-minus*
     *precedence-level-2*))
 
+;; LEVEL 5 OPERATORS
+
+(defvar *precedence-level-5*
+  (p/or
+    (p/seq *precedence-level-3* '* *precedence-level-3* :=> #'(lambda ($1 $2 $3)
+								`(* ,$1 ,$3)))
+    *precedence-level-3*))
+
 ;; INFIX
 
 (defmacro infix (&body tokens)
-  (multiple-value-bind (ok result left) (funcall *precedence-level-3* tokens)
+  (multiple-value-bind (ok result left) (funcall *precedence-level-5* tokens)
     result))

@@ -9,7 +9,7 @@
 
 (export '(infix))
 
-(defvar *reserved-symbols* '(+ - ++ --))
+(defvar *reserved-symbols* '(+ - ++ -- %))
 
 (defvar *l-value*
   #'(lambda (tokens)
@@ -59,7 +59,11 @@
 (defvar *precedence-level-5*
   (either-parser
     (parsers-in-series *precedence-level-3* '* *precedence-level-3* :=> #'(lambda ($1 $2 $3)
-								            `(* ,$1 ,$3)))
+								            `(,$2 ,$1 ,$3)))
+    (parsers-in-series *precedence-level-3* '/ *precedence-level-3* :=> #'(lambda ($1 $2 $3)
+									    `(,$2 ,$1 ,$3)))
+    (parsers-in-series *precedence-level-3* '% *precedence-level-3* :=> #'(lambda ($1 $2 $3)
+									    `(,$2 ,$1 ,$3)))
     *precedence-level-3*))
 
 ;; INFIX

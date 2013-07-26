@@ -80,23 +80,23 @@
 	 on (7 % 2)
 	 returns (mod 7 2))
 
-(running (p/or #'number-parser (symbol-parser 'x))
+(running (either-parser #'number-parser (symbol-parser 'x))
 	 on (7 8)
 	 returns 7)
 
-(running (p/or #'number-parser (symbol-parser 'x))
+(running (either-parser #'number-parser (symbol-parser 'x))
 	 on (7 8)
 	 leaves (8))
 
-(running (p/or #'number-parser (symbol-parser 'x))
+(running (either-parser #'number-parser (symbol-parser 'x))
 	 on (x 8)
 	 returns x)
 
-(running (p/or #'number-parser (symbol-parser 'x))
+(running (either-parser #'number-parser (symbol-parser 'x))
 	 on (x 8)
 	 leaves (8))
 
-(running (p/or #'number-parser (symbol-parser 'x))
+(running (either-parser #'number-parser (symbol-parser 'x))
 	 on (y)
 	 fails)
 

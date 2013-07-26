@@ -20,7 +20,7 @@
 	  (values)))))
 
 (defvar *r-value*
-  (p/or
+  (either-parser
     #'number-parser
     *l-value*))
 
@@ -35,7 +35,7 @@
 			                   `(decf ,$2))))
 
 (defvar *precedence-level-2*
-  (p/or
+  (either-parser
     *pre-increment*
     *pre-decrement*
     *r-value*))
@@ -49,7 +49,7 @@
   (parsers-in-series '- *precedence-level-2*))
 
 (defvar *precedence-level-3*
-  (p/or
+  (either-parser
     *unary-plus*
     *unary-minus*
     *precedence-level-2*))
@@ -57,7 +57,7 @@
 ;; LEVEL 5 OPERATORS
 
 (defvar *precedence-level-5*
-  (p/or
+  (either-parser
     (parsers-in-series *precedence-level-3* '* *precedence-level-3* :=> #'(lambda ($1 $2 $3)
 								            `(* ,$1 ,$3)))
     *precedence-level-3*))

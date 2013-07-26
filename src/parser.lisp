@@ -3,7 +3,10 @@
   (:use :cl))
 (in-package :cl-infix-parser)
 
-(export '(number-parser symbol-parser parsers-in-series p/or))
+(export '(number-parser
+	   symbol-parser
+	   parsers-in-series
+	   either-parser))
 
 (defun as-parser (p)
   (if (symbolp p)
@@ -44,7 +47,7 @@
 		     (setf result (append result (list p-result))))
 		finally (return (values t (apply transform result) tokens-left)))))))
 
-(defun p/or (&rest parsers)
+(defun either-parser (&rest parsers)
   #'(lambda (tokens)
       (loop for p in parsers
 	    do (multiple-value-bind (p-ok p-result p-left)

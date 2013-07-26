@@ -9,10 +9,10 @@
 
 (export '(infix))
 
-(defmacro binary (op next-precedence-level)
-  `(parsers-in-series ,next-precedence-level ,op ,next-precedence-level
-		      :=> #'(lambda ($1 $2 $3)
-			      `(,$2 ,$1 ,$3))))
+(defun binary (op next-precedence-level)
+  (parsers-in-series next-precedence-level op next-precedence-level
+		     :=> #'(lambda ($1 $2 $3)
+			     `(,$2 ,$1 ,$3))))
 
 (defvar *reserved-symbols* '(+ - ++ -- %))
 

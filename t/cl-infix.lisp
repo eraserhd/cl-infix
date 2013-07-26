@@ -13,7 +13,7 @@
       (expands-to
 	`(is (macroexpand-1 ',form) ',object ,message :test #'equalp)))))
 
-(plan 9)
+(plan 10)
 
 (the-form (infix 42) expands-to 42)
 (the-form (infix + 2) expands-to 2)
@@ -25,6 +25,6 @@
 (the-form (infix 10 * 5) expands-to (* 10 5))
 (the-form (infix 10 / 4) expands-to (/ 10 4))
 (the-form (infix 10 % 7) expands-to (% 10 7))
-
+(the-form (infix 10 * -- y) expands-to (* 10 (decf y)))
 
 (finalize)

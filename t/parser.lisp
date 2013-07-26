@@ -44,13 +44,18 @@
 	    (is (third parse-result) ',value ,message :test #'equal)
 	    (ok nil ,message)))))))
 
-(plan 16)
+(plan 20)
 
 (running #'number-parser on () fails)
 (running #'number-parser on (42 x) returns 42)
 (running #'number-parser on (42 x) leaves (x))
 (running #'number-parser on (23 2 3 1) returns 23)
 (running #'number-parser on (23 2 3 1) leaves (2 3 1))
+
+(running (symbol-parser 'x) on () fails)
+(running (symbol-parser 'x) on (x 42) returns x)
+(running (symbol-parser 'x) on (x 42) leaves (42))
+(running (symbol-parser 'x) on (y 55) fails)
 
 (running (parsers-in-series (symbol-parser '+) #'number-parser)
 	 on (+)

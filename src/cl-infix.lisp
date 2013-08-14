@@ -83,8 +83,14 @@
       % ,#'(lambda (left op right) (list 'mod left right)))
     *precedence-level-3*))
 
+(defvar *precedence-level-6*
+  (binaries-of-equal-precedence-parser
+    `(+ ,#'(lambda (left op right) (list op left right))
+      - ,#'(lambda (left op right) (list op left right)))
+    *precedence-level-5*))
+
 ;; INFIX
 
 (defmacro infix (&body tokens)
-  (multiple-value-bind (ok result left) (funcall *precedence-level-5* tokens)
+  (multiple-value-bind (ok result left) (funcall *precedence-level-6* tokens)
     result))

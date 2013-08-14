@@ -95,8 +95,16 @@
       >> ,#'(lambda (left op right) (list 'ash left (list '- right))))
     *precedence-level-6*))
 
+(defvar *precedence-level-8*
+  (binaries-of-equal-precedence-parser
+    (list '< #'(lambda (left op right) (list op left right))
+	  '> #'(lambda (left op right) (list op left right))
+	  '<= #'(lambda (left op right) (list op left right))
+	  '>= #'(lambda (left op right) (list op left right)))
+    *precedence-level-7*))
+
 ;; INFIX
 
 (defmacro infix (&body tokens)
-  (multiple-value-bind (ok result left) (funcall *precedence-level-7* tokens)
+  (multiple-value-bind (ok result left) (funcall *precedence-level-8* tokens)
     result))

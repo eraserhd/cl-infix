@@ -7,12 +7,27 @@
 ;; Operator precedence levels refer to the chart on
 ;; http://en.cppreference.com/w/cpp/language/operator_precedence
 
-(export '(infix))
+(export '(infix %))
 
-(defun binary (op next-precedence-level)
-  (parsers-in-series next-precedence-level op next-precedence-level
-		     :=> #'(lambda ($1 $2 $3)
-			     `(,$2 ,$1 ,$3))))
+(defun binaries-of-equal-precedence-parser (operators term-parser)
+  #'(lambda (tokens)
+      (block parser
+	(multiple-value-bind (first-ok result tokens)
+	    (funcall term-parser tokens)
+	  (if (not first-ok)
+	    (return-from parser (values)))
+	  (loop
+	    (let* ((op (car tokens))
+		   (op-handler (getf operators op)))
+	      (if (not op-handler)
+		(return-from parser (values t result tokens)))
+	      (multiple-value-bind (term-ok term-result term-tokens)
+		  (funcall term-parser (cdr tokens))
+		(if (not term-ok)
+		  (return-from parser (values t result tokens)))
+		(setf tokens term-tokens)
+		(setf result (funcall op-handler result op term-result)))))))))
+
 
 (defvar *reserved-symbols* '(+ - ++ -- %))
 
@@ -62,10 +77,10 @@
 ;; LEVEL 5 OPERATORS
 
 (defvar *precedence-level-5*
-  (either-parser
-    (binary '* *precedence-level-3*)
-    (binary '/ *precedence-level-3*)
-    (binary '% *precedence-level-3*)
+  (binaries-of-equal-precedence-parser
+    `(* ,#'(lambda (left op right) (list op left right))
+      / ,#'(lambda (left op right) (list op left right))
+      % ,#'(lambda (left op right) (list op left right)))
     *precedence-level-3*))
 
 ;; INFIX

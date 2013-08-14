@@ -7,7 +7,7 @@
 ;; Operator precedence levels refer to the chart on
 ;; http://en.cppreference.com/w/cpp/language/operator_precedence
 
-(export '(infix %))
+(export '(infix % << >>))
 
 (defun binaries-of-equal-precedence-parser (operators term-parser)
   #'(lambda (tokens)
@@ -29,7 +29,7 @@
 		(setf result (funcall op-handler result op term-result)))))))))
 
 
-(defvar *reserved-symbols* '(+ - ++ -- %))
+(defvar *reserved-symbols* '(+ - ++ -- % << >>))
 
 (defvar *l-value*
   #'(lambda (tokens)
@@ -89,8 +89,14 @@
       - ,#'(lambda (left op right) (list op left right)))
     *precedence-level-5*))
 
+(defvar *precedence-level-7*
+  (binaries-of-equal-precedence-parser
+    `(<< ,#'(lambda (left op right) (list 'ash left right))
+      >> ,#'(lambda (left op right) (list 'ash left (list '- right))))
+    *precedence-level-6*))
+
 ;; INFIX
 
 (defmacro infix (&body tokens)
-  (multiple-value-bind (ok result left) (funcall *precedence-level-6* tokens)
+  (multiple-value-bind (ok result left) (funcall *precedence-level-7* tokens)
     result))

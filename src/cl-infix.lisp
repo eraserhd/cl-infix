@@ -29,6 +29,9 @@
 		(setf result (funcall op-handler result op term-result)))))))))
 
 
+(defun flip (a b c)
+  (list b a c))
+
 (defvar *reserved-symbols* '(+ - ++ -- % << >>))
 
 (defvar *l-value*
@@ -78,15 +81,15 @@
 
 (defvar *precedence-level-5*
   (binaries-of-equal-precedence-parser
-    `(* ,#'(lambda (left op right) (list op left right))
-      / ,#'(lambda (left op right) (list op left right))
+    `(* ,#'flip
+      / ,#'flip
       % ,#'(lambda (left op right) (list 'mod left right)))
     *precedence-level-3*))
 
 (defvar *precedence-level-6*
   (binaries-of-equal-precedence-parser
-    `(+ ,#'(lambda (left op right) (list op left right))
-      - ,#'(lambda (left op right) (list op left right)))
+    `(+ ,#'flip
+      - ,#'flip)
     *precedence-level-5*))
 
 (defvar *precedence-level-7*
@@ -97,10 +100,10 @@
 
 (defvar *precedence-level-8*
   (binaries-of-equal-precedence-parser
-    (list '< #'(lambda (left op right) (list op left right))
-	  '> #'(lambda (left op right) (list op left right))
-	  '<= #'(lambda (left op right) (list op left right))
-	  '>= #'(lambda (left op right) (list op left right)))
+    (list '< #'flip
+	  '> #'flip
+	  '<= #'flip
+	  '>= #'flip)
     *precedence-level-7*))
 
 ;; INFIX

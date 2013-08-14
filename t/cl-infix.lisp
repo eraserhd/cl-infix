@@ -24,7 +24,7 @@
 (the-form (infix -- y) expands-to (decf y))
 (the-form (infix 10 * 5) expands-to (* 10 5))
 (the-form (infix 10 / 4) expands-to (/ 10 4))
-(the-form (infix 10 % 7) expands-to (% 10 7))
+(the-form (infix 10 % 7) expands-to (mod 10 7))
 (the-form (infix 10 * -- y) expands-to (* 10 (decf y)))
 (the-form (infix 10 * 1 / 7) expands-to (/ (* 10 1) 7))
 

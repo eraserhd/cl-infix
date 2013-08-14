@@ -80,7 +80,7 @@
   (binaries-of-equal-precedence-parser
     `(* ,#'(lambda (left op right) (list op left right))
       / ,#'(lambda (left op right) (list op left right))
-      % ,#'(lambda (left op right) (list op left right)))
+      % ,#'(lambda (left op right) (list 'mod left right)))
     *precedence-level-3*))
 
 ;; INFIX

@@ -9,6 +9,29 @@
 
 (export '(infix % << >> == !=))
 
+(defun flip (a b c)
+  (list b a c))
+
+(defvar *binary-operators*
+  (list
+    '* #'flip
+    '/ #'flip
+    '% #'(lambda (left op right) (list 'mod left right))
+
+    '+ #'flip
+    '- #'flip
+
+    '<< #'(lambda (left op right) (list 'ash left right))
+    '>> #'(lambda (left op right) (list 'ash left (list '- right)))
+
+    '< #'flip
+    '> #'flip
+    '<= #'flip
+    '>= #'flip
+
+    '== #'(lambda (left op right) (list '= left right))
+    '!= #'(lambda (left op right) (list 'not (list '= left right)))))
+
 (defun binaries-of-equal-precedence-parser (operators term-parser)
   #'(lambda (tokens)
       (block parser
@@ -18,8 +41,8 @@
 	    (return-from parser (values)))
 	  (loop
 	    (let* ((op (car tokens))
-		   (op-handler (getf operators op)))
-	      (if (not op-handler)
+		   (op-handler (getf *binary-operators* op)))
+	      (if (not (find op operators))
 		(return-from parser (values t result tokens)))
 	      (multiple-value-bind (term-ok term-result term-tokens)
 		  (funcall term-parser (cdr tokens))
@@ -27,10 +50,6 @@
 		  (return-from parser (values t result tokens)))
 		(setf tokens term-tokens)
 		(setf result (funcall op-handler result op term-result)))))))))
-
-
-(defun flip (a b c)
-  (list b a c))
 
 (defvar *reserved-symbols* '(+ - ++ -- % << >> == !=))
 
@@ -81,35 +100,27 @@
 
 (defvar *precedence-level-5*
   (binaries-of-equal-precedence-parser
-    `(* ,#'flip
-      / ,#'flip
-      % ,#'(lambda (left op right) (list 'mod left right)))
+    '(* / %)
     *precedence-level-3*))
 
 (defvar *precedence-level-6*
   (binaries-of-equal-precedence-parser
-    `(+ ,#'flip
-      - ,#'flip)
+    '(+ -)
     *precedence-level-5*))
 
 (defvar *precedence-level-7*
   (binaries-of-equal-precedence-parser
-    `(<< ,#'(lambda (left op right) (list 'ash left right))
-      >> ,#'(lambda (left op right) (list 'ash left (list '- right))))
+    '(<< >>)
     *precedence-level-6*))
 
 (defvar *precedence-level-8*
   (binaries-of-equal-precedence-parser
-    (list '< #'flip
-	  '> #'flip
-	  '<= #'flip
-	  '>= #'flip)
+    '(< > <= >=)
     *precedence-level-7*))
 
 (defvar *precedence-level-9*
   (binaries-of-equal-precedence-parser
-    (list '== #'(lambda (left op right) (list '= left right))
-	  '!= #'(lambda (left op right) (list 'not (list '= left right))))
+    '(== !=)
     *precedence-level-8*))
 
 ;; INFIX

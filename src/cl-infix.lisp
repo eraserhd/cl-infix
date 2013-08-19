@@ -109,31 +109,18 @@
     *unary-minus*
     *precedence-level-2*))
 
-;; LEVEL 5 OPERATORS
+;; THE BINARY PARSER STACK
 
-(defvar *precedence-level-5*
-  (binaries-of-equal-precedence-parser 5 *precedence-level-3*))
-
-(defvar *precedence-level-6*
-  (binaries-of-equal-precedence-parser 6 *precedence-level-5*))
-
-(defvar *precedence-level-7*
-  (binaries-of-equal-precedence-parser 7 *precedence-level-6*))
-
-(defvar *precedence-level-8*
-  (binaries-of-equal-precedence-parser 8 *precedence-level-7*))
-
-(defvar *precedence-level-9*
-  (binaries-of-equal-precedence-parser 9 *precedence-level-8*))
-
-(defvar *precedence-level-10*
-  (binaries-of-equal-precedence-parser 10 *precedence-level-9*))
-
-(defvar *precedence-level-11*
-  (binaries-of-equal-precedence-parser 11 *precedence-level-10*))
+(defvar *top-binary-parser*
+  (loop with parser = *precedence-level-3*
+	for i on *binary-operators* by #'cddr
+	do (let ((precedence (first i))
+		 (operator-table (second i)))
+	     (setf parser (binaries-of-equal-precedence-parser precedence parser)))
+	finally (return parser)))
 
 ;; INFIX
 
 (defmacro infix (&body tokens)
-  (multiple-value-bind (ok result left) (funcall *precedence-level-11* tokens)
+  (multiple-value-bind (ok result left) (funcall *top-binary-parser* tokens)
     result))

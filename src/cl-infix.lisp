@@ -76,7 +76,14 @@
   (nconc (list '+ '- '++ '--)
 	 (binary-symbols)))
 
-(export '(infix % << >> == != & ^ &&))
+(defun operators-to-export ()
+  (mapcan #'(lambda (sym)
+	      (if (eq (symbol-package sym) (symbol-package 'list))
+		()
+		(list sym)))
+	  *reserved-symbols*))
+
+(export (cons 'infix (operators-to-export)))
 
 (defvar *l-value*
   #'(lambda (tokens)

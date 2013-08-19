@@ -7,7 +7,7 @@
 ;; Operator precedence levels refer to the chart on
 ;; http://en.cppreference.com/w/cpp/language/operator_precedence
 
-(export '(infix % << >> == != & ^))
+(export '(infix % << >> == != & ^ &&))
 
 (defun flip (a b c)
   (list b a c))
@@ -42,6 +42,9 @@
 
     11 (list
 	 '^ #'(lambda (left op right) (list 'logxor left right)))
+
+    13 (list
+	 '&& #'(lambda (left op right) (list 'and left right)))
     ))
 
 (defun binaries-of-equal-precedence-parser (precedence term-parser)

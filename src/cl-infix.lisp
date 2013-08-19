@@ -65,13 +65,16 @@
 		  (setf tokens term-tokens)
 		  (setf result (funcall op-handler result op term-result))))))))))
 
+(defun binary-symbols ()
+  (mapcan #'(lambda (e)
+	      (if (listp e)
+		(loop for op in e by #'cddr
+		      collect op)
+		())) *binary-operators*))
+
 (defvar *reserved-symbols* 
   (nconc (list '+ '- '++ '--)
-	 (mapcan #'(lambda (e)
-		     (if (listp e)
-		       (loop for op in e by #'cddr
-			     collect op)
-		       ())) *binary-operators*)))
+	 (binary-symbols)))
 
 (export '(infix % << >> == != & ^ &&))
 

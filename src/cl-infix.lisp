@@ -43,6 +43,9 @@
 
     13 (list
 	 '&& #'(lambda (left op right) (list 'and left right)))
+
+    14 (list
+	 '|| #'(lambda (left op right) (list 'or left right)))
     ))
 
 (defun binaries-of-equal-precedence-parser (precedence term-parser)

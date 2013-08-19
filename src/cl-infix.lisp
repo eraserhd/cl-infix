@@ -80,10 +80,10 @@
   (eq (symbol-package sym)
       (symbol-package 'list)))
 
-(defun operators-to-export ()
+(defun operator-symbols-to-export ()
   (remove-if #'cl-symbol-p *reserved-symbols*))
 
-(export (cons 'infix (operators-to-export)))
+(export (cons 'infix (operator-symbols-to-export)))
 
 (defvar *l-value*
   #'(lambda (tokens)

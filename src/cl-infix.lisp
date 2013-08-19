@@ -14,42 +14,49 @@
 
 (defvar *binary-operators*
   (list
-    '* #'flip
-    '/ #'flip
-    '% #'(lambda (left op right) (list 'mod left right))
+    5 (list
+	'* #'flip
+	'/ #'flip
+	'% #'(lambda (left op right) (list 'mod left right)))
 
-    '+ #'flip
-    '- #'flip
+    6 (list
+	'+ #'flip
+	'- #'flip)
 
-    '<< #'(lambda (left op right) (list 'ash left right))
-    '>> #'(lambda (left op right) (list 'ash left (list '- right)))
+    7 (list
+	'<< #'(lambda (left op right) (list 'ash left right))
+	'>> #'(lambda (left op right) (list 'ash left (list '- right))))
 
-    '< #'flip
-    '> #'flip
-    '<= #'flip
-    '>= #'flip
+    8 (list
+	'< #'flip
+	'> #'flip
+	'<= #'flip
+	'>= #'flip)
 
-    '== #'(lambda (left op right) (list '= left right))
-    '!= #'(lambda (left op right) (list 'not (list '= left right)))))
+    9 (list
+	'== #'(lambda (left op right) (list '= left right))
+	'!= #'(lambda (left op right) (list 'not (list '= left right))))
+    ))
 
-(defun binaries-of-equal-precedence-parser (operators term-parser)
-  #'(lambda (tokens)
-      (block parser
-	(multiple-value-bind (first-ok result tokens)
-	    (funcall term-parser tokens)
-	  (if (not first-ok)
-	    (return-from parser (values)))
-	  (loop
-	    (let* ((op (car tokens))
-		   (op-handler (getf *binary-operators* op)))
-	      (if (not (find op operators))
-		(return-from parser (values t result tokens)))
-	      (multiple-value-bind (term-ok term-result term-tokens)
-		  (funcall term-parser (cdr tokens))
-		(if (not term-ok)
+(defun binaries-of-equal-precedence-parser (precedence term-parser)
+  (let ((operator-table (getf *binary-operators* precedence)))
+    #'(lambda (tokens)
+	(block parser
+	  (multiple-value-bind (first-ok result tokens)
+	      (funcall term-parser tokens)
+	    (if (not first-ok)
+	      (return-from parser (values)))
+	    (loop
+	      (let* ((op (car tokens))
+		     (op-handler (getf operator-table op)))
+		(if (not op-handler)
 		  (return-from parser (values t result tokens)))
-		(setf tokens term-tokens)
-		(setf result (funcall op-handler result op term-result)))))))))
+		(multiple-value-bind (term-ok term-result term-tokens)
+		    (funcall term-parser (cdr tokens))
+		  (if (not term-ok)
+		    (return-from parser (values t result tokens)))
+		  (setf tokens term-tokens)
+		  (setf result (funcall op-handler result op term-result))))))))))
 
 (defvar *reserved-symbols* '(+ - ++ -- % << >> == !=))
 
@@ -99,29 +106,19 @@
 ;; LEVEL 5 OPERATORS
 
 (defvar *precedence-level-5*
-  (binaries-of-equal-precedence-parser
-    '(* / %)
-    *precedence-level-3*))
+  (binaries-of-equal-precedence-parser 5 *precedence-level-3*))
 
 (defvar *precedence-level-6*
-  (binaries-of-equal-precedence-parser
-    '(+ -)
-    *precedence-level-5*))
+  (binaries-of-equal-precedence-parser 6 *precedence-level-5*))
 
 (defvar *precedence-level-7*
-  (binaries-of-equal-precedence-parser
-    '(<< >>)
-    *precedence-level-6*))
+  (binaries-of-equal-precedence-parser 7 *precedence-level-6*))
 
 (defvar *precedence-level-8*
-  (binaries-of-equal-precedence-parser
-    '(< > <= >=)
-    *precedence-level-7*))
+  (binaries-of-equal-precedence-parser 8 *precedence-level-7*))
 
 (defvar *precedence-level-9*
-  (binaries-of-equal-precedence-parser
-    '(== !=)
-    *precedence-level-8*))
+  (binaries-of-equal-precedence-parser 9 *precedence-level-8*))
 
 ;; INFIX
 

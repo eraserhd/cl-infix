@@ -76,12 +76,12 @@
   (nconc (list '+ '- '++ '--)
 	 (binary-symbols)))
 
+(defun cl-symbol-p (sym)
+  (eq (symbol-package sym)
+      (symbol-package 'list)))
+
 (defun operators-to-export ()
-  (mapcan #'(lambda (sym)
-	      (if (eq (symbol-package sym) (symbol-package 'list))
-		()
-		(list sym)))
-	  *reserved-symbols*))
+  (remove-if #'cl-symbol-p *reserved-symbols*))
 
 (export (cons 'infix (operators-to-export)))
 

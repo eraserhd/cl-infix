@@ -7,8 +7,6 @@
 ;; Operator precedence levels refer to the chart on
 ;; http://en.cppreference.com/w/cpp/language/operator_precedence
 
-(export '(infix % << >> == != & ^ &&))
-
 (defun flip (a b c)
   (list b a c))
 
@@ -67,7 +65,15 @@
 		  (setf tokens term-tokens)
 		  (setf result (funcall op-handler result op term-result))))))))))
 
-(defvar *reserved-symbols* '(+ - ++ -- % << >> == !=))
+(defvar *reserved-symbols* 
+  (nconc (list '+ '- '++ '--)
+	 (mapcan #'(lambda (e)
+		     (if (listp e)
+		       (loop for op in e by #'cddr
+			     collect op)
+		       ())) *binary-operators*)))
+
+(export '(infix % << >> == != & ^ &&))
 
 (defvar *l-value*
   #'(lambda (tokens)

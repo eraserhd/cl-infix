@@ -7,7 +7,7 @@
 ;; Operator precedence levels refer to the chart on
 ;; http://en.cppreference.com/w/cpp/language/operator_precedence
 
-(export '(infix % << >> == !=))
+(export '(infix % << >> == != &))
 
 (defun flip (a b c)
   (list b a c))
@@ -36,6 +36,9 @@
     9 (list
 	'== #'(lambda (left op right) (list '= left right))
 	'!= #'(lambda (left op right) (list 'not (list '= left right))))
+    
+    10 (list
+	 '& #'(lambda (left op right) (list 'logand left right)))
     ))
 
 (defun binaries-of-equal-precedence-parser (precedence term-parser)
@@ -120,8 +123,11 @@
 (defvar *precedence-level-9*
   (binaries-of-equal-precedence-parser 9 *precedence-level-8*))
 
+(defvar *precedence-level-10*
+  (binaries-of-equal-precedence-parser 10 *precedence-level-9*))
+
 ;; INFIX
 
 (defmacro infix (&body tokens)
-  (multiple-value-bind (ok result left) (funcall *precedence-level-9* tokens)
+  (multiple-value-bind (ok result left) (funcall *precedence-level-10* tokens)
     result))

@@ -49,7 +49,8 @@
 
     15 (list
 	 '= #'(lambda (left op right) (list 'setf left right))
-	 '+= #'(lambda (left op right) (list 'setf left (list '+ left right))))
+	 '+= #'(lambda (left op right) (list 'setf left (list '+ left right)))
+	 '-= #'(lambda (left op right) (list 'setf left (list '- left right))))
     ))
 
 (defun binaries-of-equal-precedence-parser (precedence term-parser)

@@ -54,7 +54,9 @@
     15 (list
 	 '= #'(lambda (left op right) (list 'setf left right))
 	 '+= (mutating-assignment '+)
-	 '-= (mutating-assignment '-))
+	 '-= (mutating-assignment '-)
+	 '*= (mutating-assignment '*))
+
     ))
 
 (defun binaries-of-equal-precedence-parser (precedence term-parser)

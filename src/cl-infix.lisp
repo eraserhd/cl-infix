@@ -10,7 +10,7 @@
 (defun flip (a b c)
   (list b a c))
 
-(defun mutate-expression (mutating-operator)
+(defun mutating-assignment (mutating-operator)
   #'(lambda (left _ right)
       (list 'setf left (list mutating-operator left right))))
 
@@ -53,8 +53,8 @@
 
     15 (list
 	 '= #'(lambda (left op right) (list 'setf left right))
-	 '+= (mutate-expression '+)
-	 '-= (mutate-expression '-))
+	 '+= (mutating-assignment '+)
+	 '-= (mutating-assignment '-))
     ))
 
 (defun binaries-of-equal-precedence-parser (precedence term-parser)

@@ -58,7 +58,8 @@
 	 '*= (mutating-assignment '*)
 	 '/= (mutating-assignment '/)
 	 '%= (mutating-assignment 'mod)
-	 '&= (mutating-assignment 'logand))
+	 '&= (mutating-assignment 'logand)
+	 '^= (mutating-assignment 'logxor))
     ))
 
 (defun binaries-of-equal-precedence-parser (precedence term-parser)

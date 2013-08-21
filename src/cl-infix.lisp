@@ -55,7 +55,8 @@
 	 '= #'(lambda (left op right) (list 'setf left right))
 	 '+= (mutating-assignment '+)
 	 '-= (mutating-assignment '-)
-	 '*= (mutating-assignment '*))
+	 '*= (mutating-assignment '*)
+	 '/= (mutating-assignment '/))
 
     ))
 

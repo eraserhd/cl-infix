@@ -56,7 +56,8 @@
 	 '+= (mutating-assignment '+)
 	 '-= (mutating-assignment '-)
 	 '*= (mutating-assignment '*)
-	 '/= (mutating-assignment '/))
+	 '/= (mutating-assignment '/)
+	 '%= (mutating-assignment 'mod))
 
     ))
 

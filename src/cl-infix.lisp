@@ -7,6 +7,21 @@
 ;; Operator precedence levels refer to the chart on
 ;; http://en.cppreference.com/w/cpp/language/operator_precedence
 
+(defmacro => (form)
+  (labels ((fix (part)
+	     (cond
+	       ((or (eq '$1 part)
+		    (eq '$2 part)
+		    (eq '$3 part))
+		part)
+	       ((symbolp part)
+		`(quote ,part))
+	       ((listp part)
+		(cons 'list (mapcar #'fix part)))
+	       (t
+		 part))))
+    `#'(lambda ($1 $2 $3) ,(fix form))))
+
 (defun flip (a b c)
   (list b a c))
 
@@ -19,15 +34,15 @@
     5 (list
 	'* #'flip
 	'/ #'flip
-	'% #'(lambda (left op right) (list 'mod left right)))
+	'% (=> (mod $1 $3)))
 
     6 (list
 	'+ #'flip
 	'- #'flip)
 
     7 (list
-	'<< #'(lambda (left op right) (list 'ash left right))
-	'>> #'(lambda (left op right) (list 'ash left (list '- right))))
+	'<< (=> (ash $1 $3))
+	'>> (=> (ash $1 (- $3))))
 
     8 (list
 	'< #'flip
@@ -36,23 +51,23 @@
 	'>= #'flip)
 
     9 (list
-	'== #'(lambda (left op right) (list '= left right))
-	'!= #'(lambda (left op right) (list 'not (list '= left right))))
+	'== (=> (= $1 $3))
+	'!= (=> (not (= $1 $3))))
     
     10 (list
-	 '& #'(lambda (left op right) (list 'logand left right)))
+	 '& (=> (logand $1 $3)))
 
     11 (list
-	 '^ #'(lambda (left op right) (list 'logxor left right)))
+	 '^ (=> (logxor $1 $3)))
 
     13 (list
-	 '&& #'(lambda (left op right) (list 'and left right)))
+	 '&& (=> (and $1 $3)))
 
     14 (list
-	 '|| #'(lambda (left op right) (list 'or left right)))
+	 '|| (=> (or $1 $3)))
 
     15 (list
-	 '= #'(lambda (left op right) (list 'setf left right))
+	 '= (=> (setf $1 $3))
 	 '+= (mutating-assignment '+)
 	 '-= (mutating-assignment '-)
 	 '*= (mutating-assignment '*)
@@ -61,8 +76,7 @@
 	 '&= (mutating-assignment 'logand)
 	 '^= (mutating-assignment 'logxor)
 	 '<<= (mutating-assignment 'ash)
-	 '>>= #'(lambda (left op right)
-		  (list 'setf left (list 'ash left (list '- right)))))
+	 '>>= (=> (setf $1 (ash $1 (- $3)))))
     ))
 
 (defun binaries-of-equal-precedence-parser (precedence term-parser)

@@ -60,8 +60,9 @@
 	 '%= (mutating-assignment 'mod)
 	 '&= (mutating-assignment 'logand)
 	 '^= (mutating-assignment 'logxor)
-	 '<<= (mutating-assignment 'ash))
-
+	 '<<= (mutating-assignment 'ash)
+	 '>>= #'(lambda (left op right)
+		  (list 'setf left (list 'ash left (list '- right)))))
     ))
 
 (defun binaries-of-equal-precedence-parser (precedence term-parser)

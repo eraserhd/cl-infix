@@ -13,7 +13,7 @@
       (expands-to
 	`(is (macroexpand-1 ',form) ',object ,message :test #'equalp)))))
 
-(plan 34)
+(plan 35)
 
 (the-form (infix 42) expands-to 42)
 (the-form (infix + 2) expands-to 2)
@@ -56,6 +56,7 @@
 (the-form (infix x &= 11) expands-to (setf x (logand x 11)))
 (the-form (infix x ^= 1) expands-to (setf x (logxor x 1)))
 (the-form (infix x <<= 1) expands-to (setf x (ash x 1)))
+(the-form (infix x >>= 3) expands-to (setf x (ash x (- 3))))
 
 
 (finalize)
